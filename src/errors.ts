@@ -1,33 +1,35 @@
-import { Request, Response, NextFunction } from "express"
-import { ZodError } from "zod"
+import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 
-class AppError extends Error{
-    statusCode: number
+class AppError extends Error {
+  statusCode: number;
 
-    constructor(message: string, statusCode: number = 400){
-        super(message)
-        this.statusCode = statusCode
-    }}
-
-const handleErrors = (err: any, req: Request, res: Response, _: NextFunction)=>{
-if(err instanceof AppError){
-return res.status(err.statusCode).json({
-    message: err.message
-})
+  constructor(message: string, statusCode: number = 400) {
+    super(message);
+    this.statusCode = statusCode;
+  }
 }
 
-if(err instanceof ZodError){
-    return res.status(400).json(err.flatten().fieldErrors)
-    
-}
+const handleErrors = (
+  err: any,
+  req: Request,
+  res: Response,
+  _: NextFunction
+) => {
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      message: err.message,
+    });
+  }
 
-console.log(err)
-return res.status(500).json({message:'internal server error'})
+  if (err instanceof ZodError) {
+    const message = err.flatten().fieldErrors;
 
-}
+    return res.status(400).json({ message });
+  }
 
+  console.log(err);
+  return res.status(500).json({ message: "internal server error" });
+};
 
-export { 
-    AppError,
-    handleErrors
-}
+export { AppError, handleErrors };

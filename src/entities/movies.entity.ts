@@ -9,7 +9,7 @@ class Movie {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({length:50, unique:true})
+    @Column({length:60, unique:true})
     name: string
 
     @Column({type:'text', nullable: true})

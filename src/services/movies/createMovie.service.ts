@@ -1,19 +1,20 @@
-import { Repository } from "typeorm"
-import { AppDataSource } from "../../data-source"
-import { Movie } from "../../entities"
-import { iMovieRepo, IMovieReturn } from "../../interfaces/movies.interfaces"
-import { movieSchema, movieSchemaReturn } from "../../schemas/movies.schemas"
+import { Repository } from "typeorm";
+import { AppDataSource } from "../../data-source";
+import { Movie } from "../../entities";
+import { iMovieRepo, IMovieReturn } from "../../interfaces/movies.interfaces";
+import { movieSchemaReturn } from "../../schemas/movies.schemas";
 
-const createMovieService = async (movieData:iMovieRepo): Promise<IMovieReturn>=>{ 
+const createMovieService = async (
+  movieData: iMovieRepo
+): Promise<IMovieReturn> => {
+  const movieRepository: Repository<Movie> = AppDataSource.getRepository(Movie);
+  const movie = movieRepository.create(movieData);
 
-    const movieRepository: Repository<Movie> = AppDataSource.getRepository(Movie)
-    const movie = movieRepository.create(movieData)
+  await movieRepository.save(movie);
 
-    await movieRepository.save(movie)
+  const newMovie = movieSchemaReturn.parse(movie);
 
-    const newMovie = movieSchemaReturn.parse(movie)
+  return newMovie;
+};
 
-    return newMovie
-}
-
-export default createMovieService
+export default createMovieService;
